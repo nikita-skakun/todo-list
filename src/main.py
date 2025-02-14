@@ -67,6 +67,30 @@ def mark_task(index, complete=True):
         print("Invalid task number.")
 
 
+def edit_task(index, new_task):
+    """Edit an existing task without changing its completion status."""
+    tasks = load_tasks()
+    if 1 <= index <= len(tasks):
+        old_task = tasks[index - 1][1]
+        tasks[index - 1][1] = new_task
+        save_tasks(tasks)
+        print(f"Edited: '{old_task}' → '{new_task}'")
+    else:
+        print("Invalid task number.")
+
+
+def edit_task(index, new_task):
+    """Edit an existing task without changing its completion status."""
+    tasks = load_tasks()
+    if 1 <= index <= len(tasks):
+        old_task = tasks[index - 1][1]
+        tasks[index - 1][1] = new_task
+        save_tasks(tasks)
+        print(f"Edited: '{old_task}' → '{new_task}'")
+    else:
+        print("Invalid task number.")
+
+
 def main():
     while True:
         clear_screen()
@@ -76,7 +100,8 @@ def main():
         print("3. Remove Task")
         print("4. Mark Task as Complete")
         print("5. Mark Task as Incomplete")
-        print("6. Exit")
+        print("6. Edit Task")
+        print("7. Exit")
         choice = input("Choose an option: ")
 
         if choice == "1":
@@ -106,6 +131,14 @@ def main():
             except ValueError:
                 print("Please enter a valid number.")
         elif choice == "6":
+            list_tasks(False)
+            try:
+                index = int(input("Enter task number to edit: "))
+                new_task = input("Enter the new task description: ")
+                edit_task(index, new_task)
+            except ValueError:
+                print("Please enter a valid number.")
+        elif choice == "7":
             print("Goodbye!")
             break
         else:
