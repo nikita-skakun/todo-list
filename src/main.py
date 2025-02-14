@@ -29,7 +29,7 @@ def add_task(task):
     print(f"Added: {task}")
 
 
-def list_tasks():
+def list_tasks(pause: bool = True):
     """List all tasks with completion status."""
     tasks = load_tasks()
     if not tasks:
@@ -38,6 +38,10 @@ def list_tasks():
         for i, (status, task) in enumerate(tasks, 1):
             checkbox = "[✔]" if status == "1" else "[ ]"
             print(f"{i}. {checkbox} {task}")
+
+    if pause:
+        # Wait for user to press Enter
+        input("\nPress Enter to continue...")
 
 
 def remove_task(index):
@@ -49,6 +53,7 @@ def remove_task(index):
         print(f"Removed: {removed[1]}")
     else:
         print("Invalid task number.")
+
 
 def mark_task(index, complete=True):
     """Mark a task as complete (✔) or incomplete ([ ])."""
@@ -80,21 +85,21 @@ def main():
         elif choice == "2":
             list_tasks()
         elif choice == "3":
-            list_tasks()
+            list_tasks(False)
             try:
                 index = int(input("Enter task number to remove: "))
                 remove_task(index)
             except ValueError:
                 print("Please enter a valid number.")
         elif choice == "4":
-            list_tasks()
+            list_tasks(False)
             try:
                 index = int(input("Enter task number to mark as complete: "))
                 mark_task(index, complete=True)
             except ValueError:
                 print("Please enter a valid number.")
         elif choice == "5":
-            list_tasks()
+            list_tasks(False)
             try:
                 index = int(input("Enter task number to mark as incomplete: "))
                 mark_task(index, complete=False)
