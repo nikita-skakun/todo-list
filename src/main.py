@@ -1,6 +1,7 @@
 import os
+import json
 
-todo_file = "todo_list.txt"
+TODO_FILE = "todo_list.json"
 
 
 def clear_screen():
@@ -8,83 +9,73 @@ def clear_screen():
 
 
 def load_tasks():
-    """Load tasks from file. Each task is stored as 'status|task' (0 = incomplete, 1 = complete)."""
-    if not os.path.exists(todo_file):
+    """Load tasks from a JSON file. Returns a list of dictionaries."""
+    if not os.path.exists(TODO_FILE):
         return []
-    with open(todo_file, "r") as file:
-        return [line.strip().split("|", 1) for line in file.readlines()]
+    with open(TODO_FILE, "r") as file:
+        try:
+            return json.load(file)
+        except json.JSONDecodeError:
+            return []
 
 
 def save_tasks(tasks):
-    """Save tasks to file in the format 'status|task'."""
-    with open(todo_file, "w") as file:
-        file.writelines(f"{status}|{task}\n" for status, task in tasks)
+    """Save tasks as a structured JSON list."""
+    with open(TODO_FILE, "w") as file:
+        json.dump(tasks, file, indent=4)
 
 
 def add_task(task):
-    """Add a new task as incomplete (status = 0)."""
+    """Add a new task with default status as incomplete."""
     tasks = load_tasks()
-    tasks.append(["0", task])  # 0 means incomplete
+    tasks.append({"task": task, "completed": False})  # Store as dict
     save_tasks(tasks)
     print(f"Added: {task}")
 
 
 def list_tasks(pause: bool = True):
-    """List all tasks with completion status."""
+    """Display all tasks with their status."""
     tasks = load_tasks()
     if not tasks:
         print("No tasks found.")
     else:
-        for i, (status, task) in enumerate(tasks, 1):
-            checkbox = "[✔]" if status == "1" else "[ ]"
-            print(f"{i}. {checkbox} {task}")
+        for i, task in enumerate(tasks, 1):
+            checkbox = "[✔]" if task["completed"] else "[ ]"
+            print(f"{i}. {checkbox} {task['task']}")
 
     if pause:
-        # Wait for user to press Enter
         input("\nPress Enter to continue...")
 
 
 def remove_task(index):
-    """Remove a task by its index."""
+    """Remove a task by index."""
     tasks = load_tasks()
     if 1 <= index <= len(tasks):
         removed = tasks.pop(index - 1)
         save_tasks(tasks)
-        print(f"Removed: {removed[1]}")
+        print(f"Removed: {removed['task']}")
     else:
         print("Invalid task number.")
 
 
 def mark_task(index, complete=True):
-    """Mark a task as complete (✔) or incomplete ([ ])."""
+    """Mark a task as complete or incomplete."""
     tasks = load_tasks()
     if 1 <= index <= len(tasks):
-        tasks[index - 1][0] = "1" if complete else "0"
+        tasks[index - 1]["completed"] = complete
         save_tasks(tasks)
         status = "completed" if complete else "incomplete"
-        print(f"Marked as {status}: {tasks[index - 1][1]}")
+        print(f"Marked as {status}: {tasks[index - 1]['task']}")
     else:
         print("Invalid task number.")
 
 
 def edit_task(index, new_task):
-    """Edit an existing task without changing its completion status."""
+    """Edit a task without changing its completion status."""
     tasks = load_tasks()
     if 1 <= index <= len(tasks):
-        old_task = tasks[index - 1][1]
-        tasks[index - 1][1] = new_task
-        save_tasks(tasks)
-        print(f"Edited: '{old_task}' → '{new_task}'")
-    else:
-        print("Invalid task number.")
-
-
-def edit_task(index, new_task):
-    """Edit an existing task without changing its completion status."""
-    tasks = load_tasks()
-    if 1 <= index <= len(tasks):
-        old_task = tasks[index - 1][1]
-        tasks[index - 1][1] = new_task
+        old_task = tasks[index - 1]["task"]
+        tasks[index - 1]["task"] = new_task
         save_tasks(tasks)
         print(f"Edited: '{old_task}' → '{new_task}'")
     else:
