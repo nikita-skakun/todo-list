@@ -2,6 +2,11 @@ import os
 
 todo_file = "todo_list.txt"
 
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
 def load_tasks():
     """Load tasks from file. Each task is stored as 'status|task' (0 = incomplete, 1 = complete)."""
     if not os.path.exists(todo_file):
@@ -9,10 +14,12 @@ def load_tasks():
     with open(todo_file, "r") as file:
         return [line.strip().split("|", 1) for line in file.readlines()]
 
+
 def save_tasks(tasks):
     """Save tasks to file in the format 'status|task'."""
     with open(todo_file, "w") as file:
         file.writelines(f"{status}|{task}\n" for status, task in tasks)
+
 
 def add_task(task):
     """Add a new task as incomplete (status = 0)."""
@@ -20,6 +27,7 @@ def add_task(task):
     tasks.append(["0", task])  # 0 means incomplete
     save_tasks(tasks)
     print(f"Added: {task}")
+
 
 def list_tasks():
     """List all tasks with completion status."""
@@ -30,6 +38,7 @@ def list_tasks():
         for i, (status, task) in enumerate(tasks, 1):
             checkbox = "[✔]" if status == "1" else "[ ]"
             print(f"{i}. {checkbox} {task}")
+
 
 def remove_task(index):
     """Remove a task by its index."""
@@ -52,8 +61,10 @@ def mark_task(index, complete=True):
     else:
         print("Invalid task number.")
 
+
 def main():
     while True:
+        clear_screen()
         print("\nTo-Do List")
         print("1. Add Task")
         print("2. List Tasks")
@@ -62,7 +73,7 @@ def main():
         print("5. Mark Task as Incomplete")
         print("6. Exit")
         choice = input("Choose an option: ")
-        
+
         if choice == "1":
             task = input("Enter task: ")
             add_task(task)
@@ -94,6 +105,7 @@ def main():
             break
         else:
             print("Invalid choice, try again.")
+
 
 if __name__ == "__main__":
     main()
